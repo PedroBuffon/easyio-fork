@@ -1,38 +1,10 @@
+This is a fork of https://github.com/Juriy/easyio to make it work with docker.
+
 # EASYIO
 A simple application to test REST and SocketIO connectivity and experiment with node.js deployement models. This is an accompanying app 
 for YouTube series - **"Deploying Node"** https://www.youtube.com/playlist?list=PLQlWzK5tU-gDyxC1JTpyC2avvJlt3hrIh
 
-Check out the deployed version at https://nanogram.io
-
-
-# Building locally
-
-```
-npm install
-npm start
-```
-
-# Running application
-easyio accepts argments, each of which is optional. Below are the arguments with their default values:
-
-`node main.js --name default --port 8080`
-
-`name` - the name that this node will report in API (useful for load-balancing checks)
-
-`port` - port to listen to (host is hardcoded to 127.0.0.1)
-
-To run with PM2 (example with two instances on different ports to match with `conf/nginx/load-balancing.conf` configuration)
-
-```
-pm2 start --name easy-1 main.js -- --name easy-1 --port 8080
-pm2 start --name easy-2 main.js -- --name easy-2 --port 8081
-```
-
-# Project Structure
-The node.js app contains only one file - `main.js`. There are some static files to present a (reasonably awkward) 
-UI in `public` folder.
-
-NGINX configs are in `conf/nginx` folder
+Check out the deployed version at https://nanogram.io (NOT WORKING ANYMORE)
 
 # API
 An application exposes REST and SocketIO APIs
@@ -48,4 +20,64 @@ An application exposes REST and SocketIO APIs
 ## SocketIO API
 For every connected client, an application listens to `heartbeat` event. Once event is received, server will send back `heartbeat` event with the same payload as client sent, adding the name of the node that processed event. Useful to test socket.io connectivity as well as roundtrip times.
 
+###########################################
+<p>To get it running:
 
+``` docker run -d -p 8080:8080 --name readyio-fork --restart=unless-stopped pedrobuffon/easyio-fork:latest ```
+
+<p>or you can run it with a docker compose as well:
+
+```
+version: '3.6'
+services:
+  easyio-fork:
+    container_name: easyio-fork
+    image: pedrobuffon/easyio-fork:latest
+    restart: unless-stopped
+    network_mode: bridge
+    labels:
+      - "com.centurylinklabs.watchtower.monitor-only=true"
+    ports:
+      - 9090:8080
+    environment:
+      - PUID=1000 #optional
+      - PGID=1000 #optional
+      - WEB_PORT=8080 #optional
+      - WEB_NAME=testname #optional
+```
+<table>
+    <thead>
+    <tr>
+    <th>Environment Variable</th>
+    <th>Example Value</th>
+    <th>Description</th>
+    <th>Default Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td>PUID</td>
+    <td>1000 or name</td>
+    <td><code>Optional</code>User Permission</td>
+    <td>node</td>
+    </tr>
+    <tr>
+    <td>PGID</td>
+    <td>1000 or name</td>
+    <td><code>Optional</code>Group Permission</td>
+    <td>node</td>
+    </tr>
+    <tr>
+    <td>WEB_PORT</td>
+    <td>8080</td>
+    <td><code>Optional</code>App web port</td>
+    <td>8080</td>
+    </tr>
+    <tr>
+    <td>WEB_NAME</td>
+    <td>default</td>
+    <td><code>Optional</code>App Name</td>
+    <td>default</td>
+    </tr>
+    </tbody>
+    </table>
