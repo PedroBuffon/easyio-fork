@@ -35,8 +35,6 @@ services:
     image: pedrobuffon/easyio-fork:latest
     restart: unless-stopped
     network_mode: bridge
-    labels:
-      - "com.centurylinklabs.watchtower.monitor-only=true"
     ports:
       - 9090:8080
     environment:
